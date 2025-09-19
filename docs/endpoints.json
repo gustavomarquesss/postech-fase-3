@@ -1,0 +1,157 @@
+{
+  "baseURL": "http://localhost:3000",
+  "endpoints": {
+    "posts": {
+      "list": {
+        "method": "GET",
+        "path": "/posts",
+        "description": "Lista todos os posts",
+        "auth": false,
+        "params": {},
+        "query": {},
+        "body": null,
+        "responses": {
+          "200": {
+            "description": "Lista de posts retornada com sucesso",
+            "type": "Post[]"
+          }
+        }
+      },
+      "search": {
+        "method": "GET",
+        "path": "/posts/search",
+        "description": "Busca posts por termo no título/conteúdo",
+        "auth": false,
+        "params": {},
+        "query": {
+          "q": {
+            "type": "string",
+            "required": true,
+            "description": "Termo de busca"
+          }
+        },
+        "body": null,
+        "responses": {
+          "200": {
+            "description": "Posts encontrados",
+            "type": "Post[]"
+          }
+        }
+      },
+      "getById": {
+        "method": "GET",
+        "path": "/posts/:id",
+        "description": "Retorna um post pelo ID",
+        "auth": false,
+        "params": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "ID do post"
+          }
+        },
+        "query": {},
+        "body": null,
+        "responses": {
+          "200": {
+            "description": "Post encontrado",
+            "type": "Post"
+          },
+          "404": {
+            "description": "Post não encontrado",
+            "type": "ErrorResponse"
+          }
+        }
+      },
+      "create": {
+        "method": "POST",
+        "path": "/posts",
+        "description": "Cria um novo post",
+        "auth": true,
+        "params": {},
+        "query": {},
+        "body": {
+          "type": "CreatePostRequest",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Post criado com sucesso",
+            "type": "Post"
+          },
+          "401": {
+            "description": "Não autorizado",
+            "type": "ErrorResponse"
+          }
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "path": "/posts/:id",
+        "description": "Atualiza um post existente",
+        "auth": true,
+        "params": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "ID do post"
+          }
+        },
+        "query": {},
+        "body": {
+          "type": "UpdatePostRequest",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Post atualizado com sucesso",
+            "type": "Post"
+          },
+          "404": {
+            "description": "Post não encontrado",
+            "type": "ErrorResponse"
+          },
+          "401": {
+            "description": "Não autorizado",
+            "type": "ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "path": "/posts/:id",
+        "description": "Deleta um post",
+        "auth": true,
+        "params": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "ID do post"
+          }
+        },
+        "query": {},
+        "body": null,
+        "responses": {
+          "204": {
+            "description": "Post deletado com sucesso",
+            "type": null
+          },
+          "404": {
+            "description": "Post não encontrado",
+            "type": "ErrorResponse"
+          },
+          "401": {
+            "description": "Não autorizado",
+            "type": "ErrorResponse"
+          }
+        }
+      }
+    }
+  },
+  "notes": {
+    "authentication": "O backend atual NÃO possui sistema de autenticação implementado. Todas as rotas marcadas com 'auth: true' precisarão de implementação futura no backend.",
+    "authHeader": "Authorization: Bearer <token> (quando implementado)",
+    "contentType": "application/json",
+    "timestamps": "Todos os posts incluem createdAt e updatedAt automaticamente via Mongoose"
+  }
+}
