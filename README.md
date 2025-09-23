@@ -1,4 +1,4 @@
-# 🎨 Frontend - Blog para Professores
+# 🎨 Blog para Professores - Frontend
 
 Frontend React + TypeScript para o sistema de blog dos professores da rede pública. Interface moderna, responsiva e acessível para compartilhamento de conteúdo educacional.
 
@@ -7,13 +7,13 @@ Frontend React + TypeScript para o sistema de blog dos professores da rede públ
 ### 📱 Telas Principais
 - **Página Principal** - Lista de posts com busca e funcionalidades de CRUD
 - **Modals**:
-  - Modal de Login para autenticação de professores
+  - Modal de Login/Registro para autenticação de professores
   - Modal para criar/editar posts
   - Modal de confirmação para exclusão de posts
 
 ### ✨ Recursos Técnicos
 - ✅ React 19 + TypeScript + Vite
-- ✅ Tailwind CSS para estilização responsiva
+- ✅ Tailwind CSS v3 para estilização responsiva
 - ✅ Context API para gerenciamento de estado
 - ✅ React Hook Form + Zod para validação
 - ✅ React Query para cache e sincronização
@@ -22,6 +22,7 @@ Frontend React + TypeScript para o sistema de blog dos professores da rede públ
 - ✅ Loading states com skeletons
 - ✅ Design responsivo (Web e Mobile)
 - ✅ Docker e Docker Compose
+- ✅ Autenticação JWT integrada com backend
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -30,9 +31,12 @@ src/
 ├── components/          # Componentes reutilizáveis
 │   ├── Header.tsx       # Cabeçalho da aplicação
 │   ├── Modal.tsx        # Modal base
-│   ├── LoginModal.tsx   # Modal de login
+│   ├── LoginModal.tsx   # Modal de login/registro
 │   ├── PostFormModal.tsx # Modal criar/editar post
 │   ├── DeleteConfirmModal.tsx # Modal confirmação exclusão
+│   ├── PostViewModal.tsx # Modal visualização de post
+│   ├── RegisterModal.tsx # Modal de registro
+│   ├── Router.tsx       # Sistema de roteamento
 │   ├── Toast.tsx        # Sistema de notificações
 │   └── Loading.tsx      # Componentes de loading
 ├── pages/               # Páginas principais
@@ -45,7 +49,7 @@ src/
 │   └── api.ts           # Configuração Axios e serviços
 ├── types/               # Tipos TypeScript
 │   └── index.ts         # Tipos principais
-└── utils/               # Utilitários gerais
+└── assets/              # Assets do projeto
 ```
 
 ## ⚙️ Setup e Instalação
@@ -106,12 +110,14 @@ npm run preview
 - **Backend API**: http://localhost:3000
 - **MongoDB**: localhost:27017
 
-## 🔐 Autenticação (Modo Demonstração)
+## 🔐 Autenticação
 
 ### Sistema Integrado com Backend
 - **Registro**: Criar nova conta via interface
 - **Login**: Username + senha (mínimo 6 caracteres)
 - **JWT**: Tokens com expiração de 1 hora
+- **Interceptors**: Automáticos para requests/responses
+- **Logout**: Automático quando token expira
 
 ### Como Criar uma Conta
 1. Clicar em "Entrar"
@@ -119,7 +125,7 @@ npm run preview
 3. Preencher username e senha
 4. Login automático após registro
 
-### Exemplo de Usuário
+### Exemplo de Usuário de Teste
 ```
 Username: professor1
 Senha: 123456
@@ -129,29 +135,70 @@ Senha: 123456
 
 ### Endpoints Utilizados
 ```typescript
-// GET /posts - Lista todos os posts
-// GET /posts/:id - Busca post por ID  
-// GET /posts/search?q=termo - Busca por termo
-// POST /posts - Cria novo post (auth)
-// PUT /posts/:id - Atualiza post (auth)
-// DELETE /posts/:id - Deleta post (auth)
+// Autenticação
+POST /auth/login    - Login com username/password
+POST /auth/register - Registro de novo usuário
+
+// Posts
+GET    /posts       - Lista todos os posts (público)
+GET    /posts/:id   - Busca post por ID (público)
+GET    /posts/search?q=termo - Busca por termo (público)
+POST   /posts      - Cria novo post (requer auth)
+PUT    /posts/:id  - Atualiza post (requer auth)
+DELETE /posts/:id  - Deleta post (requer auth)
 ```
 
-### Autenticação
-- ✅ Sistema JWT integrado com backend real
-- ✅ Registro de usuários via POST /auth/register
-- ✅ Login via POST /auth/login
-- ✅ Token JWT armazenado no localStorage
-- ✅ Interceptors automáticos para requests/responses
-- ✅ Logout automático quando token expira
+### JWT Token Structure
+```typescript
+interface JWTPayload {
+  id: string;      // ID do usuário no MongoDB
+  username: string; // Nome de usuário
+  exp: number;     // Timestamp de expiração
+}
+```
+
+## 🎨 Design System
+
+### Wallpaper Educacional
+- Imagem de fundo temática com 30% de opacidade
+- Localizada em `public/wallpaper-education.png`
+- Responsiva e otimizada para todos os dispositivos
+
+### Glassmorphism Design
+- Fundos semi-transparentes (`bg-white/95`)
+- Efeitos de backdrop-blur nos cards e header
+- Bordas sutis e sombras suaves
+- Hierarquia visual clara com z-index
+
+### Sistema de Cores
+```css
+Primary: #2563eb (Blue 600)
+Success: #10b981 (Emerald 500)
+Warning: #f59e0b (Amber 500)
+Error: #ef4444 (Red 500)
+
+/* Fundos */
+Card Background: rgba(255, 255, 255, 0.95)
+Header Background: rgba(255, 255, 255, 0.95)
+```
+
+### Componentes Customizados
+```css
+.btn-primary    - Botão principal azul
+.btn-secondary  - Botão secundário cinza
+.btn-danger     - Botão de perigo vermelho
+.input-field    - Campo de entrada estilizado
+.card          - Card com glassmorphism
+.modal-overlay  - Overlay de modais
+```
 
 ## 📱 Responsividade
 
 A aplicação foi desenvolvida com **mobile-first** e é totalmente responsiva:
 
-- **Mobile**: Layout otimizado para telas pequenas
-- **Tablet**: Adaptação para telas médias
-- **Desktop**: Layout completo para telas grandes
+- **Mobile** (< 640px): Layout otimizado para telas pequenas
+- **Tablet** (640px - 1024px): Adaptação para telas médias
+- **Desktop** (> 1024px): Layout completo para telas grandes
 
 ### Breakpoints (Tailwind CSS)
 - **sm**: 640px+
@@ -173,20 +220,123 @@ docker run -p 3001:80 blog-frontend
 ### Nginx Configuration
 A aplicação usa Nginx para servir os arquivos estáticos com:
 - Compressão Gzip
-- Cache de assets estáticos
+- Cache de assets estáticos (1 ano para imagens)
 - Headers de segurança
 - Suporte a SPA (Single Page Application)
+
+### Variáveis de Ambiente
+```bash
+# Frontend (.env.local)
+VITE_API_BASE_URL=http://localhost:3000
+VITE_NODE_ENV=development
+```
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **Frontend**: React 19, TypeScript, Vite
-- **Estilização**: Tailwind CSS
+- **Estilização**: Tailwind CSS v3, Inter Font
 - **Estado**: React Query, Context API
 - **Formulários**: React Hook Form + Zod
-- **HTTP**: Axios
+- **HTTP**: Axios com interceptors
 - **Build**: Vite
 - **Container**: Docker + Nginx
 - **Linting**: ESLint
+
+## 🔒 Segurança Implementada
+
+- ✅ JWT tokens com expiração (1 hora)
+- ✅ Senhas hasheadas no backend (bcrypt)
+- ✅ Validação de entrada client-side (Zod)
+- ✅ Headers de segurança no Nginx
+- ✅ Interceptors para tratamento de token expirado
+- ✅ HTTPS pronto (configuração)
+
+## 🧪 Como Testar
+
+### 1. Teste de Funcionalidades
+```bash
+# Iniciar aplicação
+npm run dev
+
+# Testar fluxo completo:
+1. Acessar http://localhost:5173
+2. Criar conta (username + senha)
+3. Fazer login
+4. Criar post
+5. Editar post
+6. Excluir post
+7. Fazer logout
+8. Verificar permissões
+```
+
+### 2. Teste de Build
+```bash
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
+
+# Teste Docker
+docker-compose up --build
+```
+
+### 3. Teste de Responsividade
+- Abrir DevTools (F12)
+- Testar breakpoints: Mobile, Tablet, Desktop
+- Verificar wallpaper e glassmorphism
+
+## 🚀 Roteamento
+
+### Sistema Customizado
+- ✅ **Redirecionamento automático**: `/` → `/home`
+- ✅ **History API**: Suporte a botões voltar/avançar
+- ✅ **URL atualizada**: Reflete a rota atual na barra de endereços
+- ✅ **Navegação programática**: Função `navigateTo()` disponível
+- ✅ **Fallback**: Rotas não encontradas redirecionam para `/home`
+
+## 🔧 Troubleshooting
+
+### Erro de Tailwind CSS
+```bash
+# Se classes não funcionarem
+npm uninstall tailwindcss
+npm install tailwindcss@^3.4.0
+npm run dev
+```
+
+### Erro de Dependências
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Erro de Docker
+```bash
+docker-compose down
+docker system prune -f
+docker-compose up --build
+```
+
+### Wallpaper não Aparece
+- Verificar se arquivo existe: `public/wallpaper-education.png`
+- Verificar nome sem espaços
+- Cache: Ctrl+F5 para reload completo
+
+## 📋 Checklist de Verificação
+
+- [x] Aplicação roda em desenvolvimento (`npm run dev`)
+- [x] Build funciona (`npm run build`)
+- [x] Docker build funciona (`docker-compose up`)
+- [x] Layout responsivo funciona
+- [x] Modais abrem e fecham corretamente
+- [x] Sistema de autenticação funciona
+- [x] CRUD de posts funciona
+- [x] Busca funciona
+- [x] Notificações (toasts) funcionam
+- [x] Wallpaper educacional carrega
+- [x] Glassmorphism aplicado
+- [x] Roteamento automático funciona
 
 ## 👥 Equipe de Desenvolvimento
 
@@ -205,10 +355,29 @@ Este projeto foi desenvolvido como parte do **Tech Challenge da FIAP - Pós-Tech
 
 ## 🚀 Próximos Passos
 
-- [ ] Implementar sistema de comentários
-- [ ] Adicionar categorias para posts
-- [ ] Implementar sistema de favoritos
-- [ ] Adicionar editor rich text
-- [ ] Implementar notificações push
-- [ ] Adicionar modo escuro
-- [ ] Implementar PWA (Progressive Web App)
+### Funcionalidades Planejadas
+- [ ] Sistema de comentários nos posts
+- [ ] Categorias para posts
+- [ ] Sistema de favoritos
+- [ ] Editor rich text (WYSIWYG)
+- [ ] Notificações push
+- [ ] Modo escuro
+- [ ] PWA (Progressive Web App)
+- [ ] Compartilhamento social
+- [ ] Sistema de busca avançada
+- [ ] Upload de arquivos/imagens
+
+### Melhorias Técnicas
+- [ ] Implementar refresh tokens
+- [ ] Testes unitários e e2e
+- [ ] CI/CD pipeline
+- [ ] Monitoring e analytics
+- [ ] Otimização de performance
+- [ ] Acessibilidade (WCAG 2.1)
+- [ ] Internacionalização (i18n)
+
+---
+
+**✨ Sistema completo e funcional!**
+
+Este frontend oferece uma experiência moderna e intuitiva para o compartilhamento de conhecimento entre professores, com foco em usabilidade, performance e acessibilidade.

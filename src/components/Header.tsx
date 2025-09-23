@@ -10,35 +10,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onLoginClick, onCreatePostClick }) => {
     const { isAuthenticated, user, logout } = useAuth();
     const { success } = useToast();
-    const [, setForceUpdate] = React.useState(0);
 
-    // Log do estado atual
-    React.useEffect(() => {
-        console.log('🎯 Header - Estado de autenticação:', { isAuthenticated, user });
-    }, [isAuthenticated, user]);
-
-    // Listener para eventos de autenticação
-    React.useEffect(() => {
-        const handleAuthChange = (event: Event) => {
-            console.log('📱 Header recebeu evento:', event.type);
-            console.log('📱 Estado atual no Header:', { isAuthenticated, user });
-            setForceUpdate(prev => {
-                const newVal = prev + 1;
-                console.log('📱 ForceUpdate:', newVal);
-                return newVal;
-            });
-        };
-
-        window.addEventListener('auth:login', handleAuthChange);
-        window.addEventListener('auth:stateChanged', handleAuthChange);
-        window.addEventListener('auth:modalClosed', handleAuthChange);
-        
-        return () => {
-            window.removeEventListener('auth:login', handleAuthChange);
-            window.removeEventListener('auth:stateChanged', handleAuthChange);
-            window.removeEventListener('auth:modalClosed', handleAuthChange);
-        };
-    }, [isAuthenticated, user]);
 
     const handleLogout = () => {
         logout();

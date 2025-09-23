@@ -1,15 +1,66 @@
 {
   "baseURL": "http://localhost:3000",
   "endpoints": {
+    "auth": {
+      "login": {
+        "method": "POST",
+        "path": "/auth/login",
+        "description": "Faz login com username e senha",
+        "auth": false,
+        "body": {
+          "type": "LoginRequest",
+          "required": true,
+          "properties": {
+            "username": "string",
+            "password": "string"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "type": "LoginResponse",
+            "properties": {
+              "token": "string (JWT)",
+              "user": "User"
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "type": "ErrorResponse"
+          }
+        }
+      },
+      "register": {
+        "method": "POST",
+        "path": "/auth/register",
+        "description": "Registra novo usuário",
+        "auth": false,
+        "body": {
+          "type": "RegisterRequest",
+          "required": true,
+          "properties": {
+            "username": "string",
+            "password": "string"
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "type": "LoginResponse"
+          },
+          "400": {
+            "description": "Username já existe ou dados inválidos",
+            "type": "ErrorResponse"
+          }
+        }
+      }
+    },
     "posts": {
       "list": {
         "method": "GET",
         "path": "/posts",
         "description": "Lista todos os posts",
         "auth": false,
-        "params": {},
-        "query": {},
-        "body": null,
         "responses": {
           "200": {
             "description": "Lista de posts retornada com sucesso",
@@ -22,7 +73,6 @@
         "path": "/posts/search",
         "description": "Busca posts por termo no título/conteúdo",
         "auth": false,
-        "params": {},
         "query": {
           "q": {
             "type": "string",
@@ -30,7 +80,6 @@
             "description": "Termo de busca"
           }
         },
-        "body": null,
         "responses": {
           "200": {
             "description": "Posts encontrados",
@@ -50,8 +99,6 @@
             "description": "ID do post"
           }
         },
-        "query": {},
-        "body": null,
         "responses": {
           "200": {
             "description": "Post encontrado",
@@ -68,11 +115,14 @@
         "path": "/posts",
         "description": "Cria um novo post",
         "auth": true,
-        "params": {},
-        "query": {},
         "body": {
           "type": "CreatePostRequest",
-          "required": true
+          "required": true,
+          "properties": {
+            "title": "string",
+            "content": "string",
+            "summary": "string (opcional)"
+          }
         },
         "responses": {
           "201": {
@@ -97,10 +147,14 @@
             "description": "ID do post"
           }
         },
-        "query": {},
         "body": {
           "type": "UpdatePostRequest",
-          "required": true
+          "required": true,
+          "properties": {
+            "title": "string (opcional)",
+            "content": "string (opcional)",
+            "summary": "string (opcional)"
+          }
         },
         "responses": {
           "200": {
@@ -129,8 +183,6 @@
             "description": "ID do post"
           }
         },
-        "query": {},
-        "body": null,
         "responses": {
           "204": {
             "description": "Post deletado com sucesso",
@@ -148,10 +200,35 @@
       }
     }
   },
+  "authentication": {
+    "type": "JWT Bearer Token",
+    "header": "Authorization: Bearer <token>",
+    "expiration": "1 hour",
+    "implementation": "Totalmente integrado com backend"
+  },
+  "types": {
+    "User": {
+      "_id": "string",
+      "username": "string"
+    },
+    "Post": {
+      "_id": "string",
+      "title": "string",
+      "content": "string",
+      "summary": "string",
+      "author": "string (username)",
+      "createdAt": "Date",
+      "updatedAt": "Date"
+    },
+    "ErrorResponse": {
+      "message": "string",
+      "error": "string (opcional)"
+    }
+  },
   "notes": {
-    "authentication": "O backend atual NÃO possui sistema de autenticação implementado. Todas as rotas marcadas com 'auth: true' precisarão de implementação futura no backend.",
-    "authHeader": "Authorization: Bearer <token> (quando implementado)",
+    "authentication": "Sistema JWT totalmente integrado e funcional",
     "contentType": "application/json",
-    "timestamps": "Todos os posts incluem createdAt e updatedAt automaticamente via Mongoose"
+    "timestamps": "Todos os posts incluem createdAt e updatedAt automaticamente via Mongoose",
+    "authorization": "Usuários só podem editar/deletar seus próprios posts"
   }
 }

@@ -4,6 +4,7 @@ import { LoginModal } from '../components/LoginModal';
 import { RegisterModal } from '../components/RegisterModal';
 import { PostFormModal } from '../components/PostFormModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
+import { PostViewModal } from '../components/PostViewModal';
 import { Loading, LoadingSkeleton } from '../components/Loading';
 import { ToastContainer } from '../components/Toast';
 import { useAuth } from '../hooks/useAuth';
@@ -18,29 +19,13 @@ export const HomePage: React.FC = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showPostFormModal, setShowPostFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPostViewModal, setShowPostViewModal] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deletingPost, setDeletingPost] = useState<Post | null>(null);
-  const [, setForceUpdate] = useState(0);
-
+  const [viewingPost, setViewingPost] = useState<Post | null>(null);
+  const [currentPostIndex, setCurrentPostIndex] = useState<number>(0);
   const { isAuthenticated } = useAuth();
   const toast = useToast();
-
-  // Listener para eventos de autenticação para forçar re-renderização
-  React.useEffect(() => {
-    const handleAuthChange = () => {
-      setForceUpdate(prev => prev + 1);
-    };
-
-    window.addEventListener('auth:login', handleAuthChange);
-    window.addEventListener('auth:stateChanged', handleAuthChange);
-    window.addEventListener('auth:modalClosed', handleAuthChange);
-    
-    return () => {
-      window.removeEventListener('auth:login', handleAuthChange);
-      window.removeEventListener('auth:stateChanged', handleAuthChange);
-      window.removeEventListener('auth:modalClosed', handleAuthChange);
-    };
-  }, []);
 
   const { data: allPosts, isLoading: isLoadingPosts, error: postsError } = usePostsQuery();
   const { 
@@ -132,6 +117,70 @@ export const HomePage: React.FC = () => {
     setDeletingPost(null);
   };
 
+  const handleViewPost = (post: Post) => {
+    const postIndex = posts.findIndex(p => p._id === post._id);
+    setViewingPost(post);
+    setCurrentPostIndex(postIndex);
+    setShowPostViewModal(true);
+  };
+
+  const handleClosePostView = () => {
+    setShowPostViewModal(false);
+    setViewingPost(null);
+  };
+
+  const handleNextPost = React.useCallback(() => {
+    if (currentPostIndex < posts.length - 1) {
+      const nextIndex = currentPostIndex + 1;
+      setCurrentPostIndex(nextIndex);
+      setViewingPost(posts[nextIndex]);
+    }
+  }, [currentPostIndex, posts]);
+
+  const handlePrevPost = React.useCallback(() => {
+    if (currentPostIndex > 0) {
+      const prevIndex = currentPostIndex - 1;
+      setCurrentPostIndex(prevIndex);
+      setViewingPost(posts[prevIndex]);
+    }
+  }, [currentPostIndex, posts]);
+
+  const handleEditFromModal = (post: Post) => {
+    setEditingPost(post);
+    setShowPostFormModal(true);
+  };
+
+  const handleDeleteFromModal = (post: Post) => {
+    setDeletingPost(post);
+    setShowDeleteModal(true);
+  };
+
+  // Navegação por teclado no modal
+  React.useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (showPostViewModal) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          handlePrevPost();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          handleNextPost();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          handleClosePostView();
+        }
+      }
+    };
+
+    if (showPostViewModal) {
+      document.addEventListener('keydown', handleKeyPress);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [showPostViewModal, handleNextPost, handlePrevPost]);
+
   return (
     <div className="min-h-screen relative">
       {/* Background Image */}
@@ -222,10 +271,10 @@ export const HomePage: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {posts.map((post) => (
-              <article key={post._id} className="card p-6 hover:shadow-lg transition-shadow">
+              <article key={post._id} className="card p-6 hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => handleViewPost(post)}>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                       {post.titulo}
                     </h2>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -242,7 +291,10 @@ export const HomePage: React.FC = () => {
                     <div className="flex items-center gap-2 ml-4">
                       {canEditPost() && (
                         <button
-                          onClick={() => handleEditPost(post)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditPost(post);
+                          }}
                           className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded"
                           title="Editar post"
                         >
@@ -251,7 +303,10 @@ export const HomePage: React.FC = () => {
                       )}
                       {canDeletePost() && (
                         <button
-                          onClick={() => handleDeletePost(post)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePost(post);
+                          }}
                           className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded"
                           title="Excluir post"
                         >
@@ -273,7 +328,15 @@ export const HomePage: React.FC = () => {
                 
                 {post.conteudo.length > 300 && (
                   <div className="mt-4 text-right">
-                    <span className="text-sm text-gray-500">Clique para ler mais</span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewPost(post);
+                      }}
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    >
+                      Clique para ler mais
+                    </button>
                   </div>
                 )}
               </article>
@@ -303,6 +366,18 @@ export const HomePage: React.FC = () => {
         isOpen={showDeleteModal} 
         onClose={handleCloseDeleteModal}
         post={deletingPost}
+      />
+
+      <PostViewModal 
+        isOpen={showPostViewModal} 
+        onClose={handleClosePostView}
+        post={viewingPost}
+        onEditPost={handleEditFromModal}
+        onDeletePost={handleDeleteFromModal}
+        onNextPost={handleNextPost}
+        onPrevPost={handlePrevPost}
+        hasNextPost={currentPostIndex < posts.length - 1}
+        hasPrevPost={currentPostIndex > 0}
       />
 
       {/* Toast Container */}

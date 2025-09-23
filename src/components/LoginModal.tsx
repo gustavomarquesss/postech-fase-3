@@ -46,13 +46,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       await login(data);
       success('Login realizado com sucesso!');
       
-      // Aguarda um pequeno delay para garantir que o estado foi atualizado
+      // Recarrega a página após login para garantir sincronização completa
       setTimeout(() => {
-        onClose();
-        reset();
-        // Força uma re-renderização adicional para garantir que todos os componentes sejam atualizados
-        window.dispatchEvent(new CustomEvent('auth:modalClosed'));
-      }, 4000);
+        window.location.reload();
+      }, 1000);
       
     } catch (err) {
       console.error('Erro no login:', err);
