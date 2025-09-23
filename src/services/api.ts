@@ -10,14 +10,17 @@ import type {
   RegisterResponse
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Instância principal do axios
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+  timeout: 10000,
+  withCredentials: false,
 });
 
 // Interceptor para requests - adiciona token de autenticação quando disponível

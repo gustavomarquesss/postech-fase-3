@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal } from './Modal';
 import { Loading } from './Loading';
-import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useCreatePostMutation, useUpdatePostMutation } from '../hooks/usePosts';
 import type { Post } from '../types';
@@ -36,7 +35,6 @@ interface PostFormModalProps {
 }
 
 export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, post }) => {
-  const { user } = useAuth();
   const { success, error } = useToast();
   const createPostMutation = useCreatePostMutation();
   const updatePostMutation = useUpdatePostMutation();
@@ -55,7 +53,7 @@ export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, p
     defaultValues: {
       titulo: '',
       conteudo: '',
-      autor: user?.username || '',
+      autor: '',
     },
   });
 
@@ -71,10 +69,10 @@ export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, p
       reset({
         titulo: '',
         conteudo: '',
-        autor: user?.username || '',
+        autor: '',
       });
     }
-  }, [isEditing, post, reset, user?.username]);
+  }, [isEditing, post, reset]);
 
   const watchedTitulo = watch('titulo');
   const watchedConteudo = watch('conteudo');
@@ -166,14 +164,14 @@ export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, p
             type="text"
             id="autor"
             className={`input-field ${errors.autor ? 'border-red-500 focus:ring-red-500' : ''}`}
-            placeholder="Seu nome como aparecerá no post"
+            placeholder="Digite o nome do autor (ex: João Silva, Maria Santos...)"
             disabled={isLoading}
           />
           {errors.autor && (
             <p className="mt-1 text-sm text-red-600">{errors.autor.message}</p>
           )}
           <p className="text-xs text-gray-500 mt-1">
-            Este será o nome exibido como autor do post
+            Você pode escolher qualquer nome para aparecer como autor do post
           </p>
         </div>
 

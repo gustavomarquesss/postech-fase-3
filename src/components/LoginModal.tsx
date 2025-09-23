@@ -15,7 +15,7 @@ const loginSchema = z.object({
     .max(50, 'Nome de usuário deve ter no máximo 50 caracteres'),
   password: z
     .string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres')
+    .min(2, 'Senha deve ter pelo menos 6 caracteres')
     .max(100, 'Senha deve ter no máximo 100 caracteres'),
 });
 
@@ -24,10 +24,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onShowRegister?: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onShowRegister }) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const { success, error } = useToast();
@@ -46,8 +45,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onShowR
     try {
       await login(data);
       success('Login realizado com sucesso!');
-      onClose();
-      reset();
+      
+      // Aguarda um pequeno delay para garantir que o estado foi atualizado
+      setTimeout(() => {
+        onClose();
+        reset();
+        // Força uma re-renderização adicional para garantir que todos os componentes sejam atualizados
+        window.dispatchEvent(new CustomEvent('auth:modalClosed'));
+      }, 4000);
+      
     } catch (err) {
       console.error('Erro no login:', err);
       error(
@@ -137,23 +143,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onShowR
         </div>
       </form>
 
-      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-        {onShowRegister && (
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onShowRegister();
-              }}
-              className="text-sm text-blue-600 hover:text-blue-800 underline"
-              disabled={isLoading}
-            >
-              Não tem uma conta? Criar nova conta
-            </button>
-          </div>
-        )}
-      </div>
     </Modal>
   );
 };

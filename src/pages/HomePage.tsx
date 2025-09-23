@@ -20,9 +20,27 @@ export const HomePage: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deletingPost, setDeletingPost] = useState<Post | null>(null);
+  const [, setForceUpdate] = useState(0);
 
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const toast = useToast();
+
+  // Listener para eventos de autenticação para forçar re-renderização
+  React.useEffect(() => {
+    const handleAuthChange = () => {
+      setForceUpdate(prev => prev + 1);
+    };
+
+    window.addEventListener('auth:login', handleAuthChange);
+    window.addEventListener('auth:stateChanged', handleAuthChange);
+    window.addEventListener('auth:modalClosed', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('auth:login', handleAuthChange);
+      window.removeEventListener('auth:stateChanged', handleAuthChange);
+      window.removeEventListener('auth:modalClosed', handleAuthChange);
+    };
+  }, []);
 
   const { data: allPosts, isLoading: isLoadingPosts, error: postsError } = usePostsQuery();
   const { 
@@ -46,13 +64,13 @@ export const HomePage: React.FC = () => {
     if (postsError) {
       toast.error('Erro ao carregar posts. Tente novamente.');
     }
-  }, [postsError, toast.error]);
+  }, [postsError, toast]);
 
   React.useEffect(() => {
     if (searchError) {
       toast.error('Erro ao buscar posts. Tente novamente.');
     }
-  }, [searchError, toast.error]);
+  }, [searchError, toast]);
 
   const handleSearch = () => {
     if (searchTerm.length < 2) {
@@ -83,13 +101,16 @@ export const HomePage: React.FC = () => {
     });
   };
 
-  const canEditPost = (post: Post): boolean => {
-    return isAuthenticated && user?.username === post.autor;
+  const canEditPost = (): boolean => {
+    // Usuário autenticado pode editar qualquer post
+    return isAuthenticated;
   };
 
-  const canDeletePost = (post: Post): boolean => {
-    return isAuthenticated && user?.username === post.autor;
+  const canDeletePost = (): boolean => {
+    // Usuário autenticado pode excluir qualquer post
+    return isAuthenticated;
   };
+
 
   const handleEditPost = (post: Post) => {
     setEditingPost(post);
@@ -217,9 +238,9 @@ export const HomePage: React.FC = () => {
                     </div>
                   </div>
                   
-                  {(canEditPost(post) || canDeletePost(post)) && (
+                  {(canEditPost() || canDeletePost()) && (
                     <div className="flex items-center gap-2 ml-4">
-                      {canEditPost(post) && (
+                      {canEditPost() && (
                         <button
                           onClick={() => handleEditPost(post)}
                           className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded"
@@ -228,7 +249,7 @@ export const HomePage: React.FC = () => {
                           ✏️
                         </button>
                       )}
-                      {canDeletePost(post) && (
+                      {canDeletePost() && (
                         <button
                           onClick={() => handleDeletePost(post)}
                           className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded"
@@ -265,7 +286,6 @@ export const HomePage: React.FC = () => {
       <LoginModal 
         isOpen={showLoginModal} 
         onClose={() => setShowLoginModal(false)}
-        onShowRegister={() => setShowRegisterModal(true)}
       />
       
       <RegisterModal 
