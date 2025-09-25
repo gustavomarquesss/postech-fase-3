@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/api';
 import type { User, LoginRequest, RegisterRequest } from '../types';
 import { jwtDecode } from 'jwt-decode';
@@ -9,7 +9,7 @@ interface JWTPayload {
   username: string;
   exp: number;
   iat?: number;
-  [key: string]: any; // Para permitir outros campos
+  [key: string]: string | number | undefined;
 }
 
 interface AuthState {
@@ -27,7 +27,6 @@ export const useAuth = () => {
     isLoading: true,
   });
 
-  // Carrega dados do localStorage na inicialização
   useEffect(() => {
     const token = localStorage.getItem('authToken');
 
@@ -35,11 +34,10 @@ export const useAuth = () => {
       try {
         const decoded = jwtDecode<JWTPayload>(token);
         
-        // Verifica se o token não expirou
         if (decoded.exp * 1000 > Date.now()) {
           const user: User = {
-            _id: decoded.id || decoded._id || decoded.userId || decoded.sub || 'unknown',
-            username: decoded.username || decoded.user || decoded.name || 'unknown',
+            _id: String(decoded.id || decoded._id || decoded.userId || decoded.sub || 'unknown'),
+            username: String(decoded.username || decoded.user || decoded.name || 'unknown'),
           };
           
           setState({
@@ -49,7 +47,6 @@ export const useAuth = () => {
             isLoading: false,
           });
         } else {
-          // Token expirado
           localStorage.removeItem('authToken');
           setState(prev => ({ ...prev, isLoading: false }));
         }
@@ -63,7 +60,6 @@ export const useAuth = () => {
     }
   }, []);
 
-  // Escuta eventos de logout do interceptor do axios
   useEffect(() => {
     const handleLogout = () => {
       setState({
@@ -82,12 +78,11 @@ export const useAuth = () => {
     try {
       const { token } = await authService.login(credentials);
       
-      // Decodifica o token para extrair informações do usuário
       const decoded = jwtDecode<JWTPayload>(token);
       
       const user: User = {
-        _id: decoded.id || decoded._id || decoded.userId || decoded.sub || 'unknown',
-        username: decoded.username || decoded.user || decoded.name || 'unknown',
+        _id: String(decoded.id || decoded._id || decoded.userId || decoded.sub || 'unknown'),
+        username: String(decoded.username || decoded.user || decoded.name || 'unknown'),
       };
 
       localStorage.setItem('authToken', token);
@@ -121,7 +116,6 @@ export const useAuth = () => {
   const register = useCallback(async (userData: RegisterRequest): Promise<void> => {
     try {
       await authService.register(userData);
-      // Após registro bem-sucedido, fazer login automaticamente
       await login({ username: userData.username, password: userData.password });
     } catch (error) {
       console.error('Erro no registro:', error);

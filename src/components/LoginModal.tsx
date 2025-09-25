@@ -15,7 +15,7 @@ const loginSchema = z.object({
     .max(50, 'Nome de usuário deve ter no máximo 50 caracteres'),
   password: z
     .string()
-    .min(2, 'Senha deve ter pelo menos 6 caracteres')
+    .min(6, 'Senha deve ter pelo menos 6 caracteres')
     .max(100, 'Senha deve ter no máximo 100 caracteres'),
 });
 
@@ -45,17 +45,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     try {
       await login(data);
       success('Login realizado com sucesso!');
-      
-      // Recarrega a página após login para garantir sincronização completa
+
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-      
+
     } catch (err) {
       console.error('Erro no login:', err);
       error(
-        err instanceof Error 
-          ? err.message 
+        err instanceof Error
+          ? err.message
           : 'Erro ao fazer login. Verifique suas credenciais.'
       );
     } finally {
@@ -139,7 +138,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
       </form>
-
     </Modal>
   );
 };

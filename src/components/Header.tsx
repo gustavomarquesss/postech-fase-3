@@ -16,7 +16,6 @@ export const Header: React.FC<HeaderProps> = ({ onLoginClick, onCreatePostClick 
         logout();
         success('Logout realizado com sucesso!');
         
-        // Recarrega a página após logout
         setTimeout(() => {
             window.location.reload();
         }, 1000);

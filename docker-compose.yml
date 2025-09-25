@@ -15,10 +15,7 @@ services:
       - backend
     restart: unless-stopped
 
-  # Serviço do backend (assumindo que existe)
   backend:
-    # Esta configuração assumirá que o backend está em ../backend
-    # Ajuste conforme necessário
     build:
       context: ../backend
       dockerfile: Dockerfile
@@ -34,7 +31,6 @@ services:
       - mongo
     restart: unless-stopped
 
-  # Banco de dados MongoDB
   mongo:
     image: mongo:7
     ports:

@@ -7,11 +7,9 @@ export const Router: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<Route>('/');
 
   useEffect(() => {
-    // Função para atualizar a rota baseada na URL atual
     const updateRoute = () => {
       const path = window.location.pathname as Route;
       
-      // Redirecionar raiz para /home
       if (path === '/') {
         window.history.pushState({}, '', '/home');
         setCurrentRoute('/home');
@@ -20,10 +18,8 @@ export const Router: React.FC = () => {
       }
     };
 
-    // Atualizar rota inicial
     updateRoute();
 
-    // Escutar mudanças na URL (botão voltar/avançar do browser)
     const handlePopState = () => {
       updateRoute();
     };
@@ -35,20 +31,17 @@ export const Router: React.FC = () => {
     };
   }, []);
 
-  // Função para navegar programaticamente
   const navigateTo = (route: Route) => {
     window.history.pushState({}, '', route);
     setCurrentRoute(route);
   };
 
-  // Renderizar componente baseado na rota
   const renderRoute = () => {
     switch (currentRoute) {
       case '/home':
         return <HomePage />;
       case '/':
       default:
-        // Fallback - redirecionar para home se não encontrar rota
         navigateTo('/home');
         return <HomePage />;
     }

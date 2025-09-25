@@ -7,7 +7,7 @@ Frontend React + TypeScript para o sistema de blog dos professores da rede públ
 ### 📱 Telas Principais
 - **Página Principal** - Lista de posts com busca e funcionalidades de CRUD
 - **Modals**:
-  - Modal de Login/Registro para autenticação de professores
+  - Modal de Login para autenticação de professores
   - Modal para criar/editar posts
   - Modal de confirmação para exclusão de posts
 
@@ -113,17 +113,10 @@ npm run preview
 ## 🔐 Autenticação
 
 ### Sistema Integrado com Backend
-- **Registro**: Criar nova conta via interface
-- **Login**: Username + senha (mínimo 6 caracteres)
+- **Login**: Username + senha
 - **JWT**: Tokens com expiração de 1 hora
 - **Interceptors**: Automáticos para requests/responses
 - **Logout**: Automático quando token expira
-
-### Como Criar uma Conta
-1. Clicar em "Entrar"
-2. Clicar em "Não tem uma conta? Criar nova conta"
-3. Preencher username e senha
-4. Login automático após registro
 
 ### Exemplo de Usuário de Teste
 ```
@@ -151,9 +144,9 @@ DELETE /posts/:id  - Deleta post (requer auth)
 ### JWT Token Structure
 ```typescript
 interface JWTPayload {
-  id: string;      // ID do usuário no MongoDB
-  username: string; // Nome de usuário
-  exp: number;     // Timestamp de expiração
+  id: string;
+  username: string;
+  exp: number;
 }
 ```
 
@@ -260,7 +253,6 @@ npm run dev
 
 # Testar fluxo completo:
 1. Acessar http://localhost:5173
-2. Criar conta (username + senha)
 3. Fazer login
 4. Criar post
 5. Editar post
@@ -352,31 +344,6 @@ docker-compose up --build
 Este projeto foi desenvolvido como parte do **Tech Challenge da FIAP - Pós-Tech Fase 3**.
 
 **🎯 Objetivo**: Criar uma plataforma moderna e intuitiva para que professores da rede pública possam compartilhar conhecimento e recursos educacionais de forma eficiente e colaborativa.
-
-## 🚀 Próximos Passos
-
-### Funcionalidades Planejadas
-- [ ] Sistema de comentários nos posts
-- [ ] Categorias para posts
-- [ ] Sistema de favoritos
-- [ ] Editor rich text (WYSIWYG)
-- [ ] Notificações push
-- [ ] Modo escuro
-- [ ] PWA (Progressive Web App)
-- [ ] Compartilhamento social
-- [ ] Sistema de busca avançada
-- [ ] Upload de arquivos/imagens
-
-### Melhorias Técnicas
-- [ ] Implementar refresh tokens
-- [ ] Testes unitários e e2e
-- [ ] CI/CD pipeline
-- [ ] Monitoring e analytics
-- [ ] Otimização de performance
-- [ ] Acessibilidade (WCAG 2.1)
-- [ ] Internacionalização (i18n)
-
----
 
 **✨ Sistema completo e funcional!**
 

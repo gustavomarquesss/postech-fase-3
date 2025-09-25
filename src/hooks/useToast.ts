@@ -20,7 +20,6 @@ export const useToast = () => {
     
     setToasts(prev => [...prev, newToast]);
 
-    // Auto remove toast after duration
     setTimeout(() => {
       setToasts(prev => prev.filter(toast => toast.id !== id));
     }, duration);

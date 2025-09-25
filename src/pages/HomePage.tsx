@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Header } from '../components/Header';
 import { LoginModal } from '../components/LoginModal';
-import { RegisterModal } from '../components/RegisterModal';
 import { PostFormModal } from '../components/PostFormModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
 import { PostViewModal } from '../components/PostViewModal';
@@ -16,7 +15,6 @@ export const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showPostFormModal, setShowPostFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostViewModal, setShowPostViewModal] = useState(false);
@@ -34,7 +32,6 @@ export const HomePage: React.FC = () => {
     error: searchError 
   } = useSearchPostsQuery(searchTerm);
 
-  // Determina quais posts exibir
   const posts = useMemo(() => {
     if (searchTerm && searchTerm.length >= 2) {
       return searchResults || [];
@@ -44,7 +41,6 @@ export const HomePage: React.FC = () => {
 
   const isLoading = isLoadingPosts || (isSearching && isLoadingSearch);
 
-  // Mostra erro se houver
   React.useEffect(() => {
     if (postsError) {
       toast.error('Erro ao carregar posts. Tente novamente.');
@@ -87,12 +83,10 @@ export const HomePage: React.FC = () => {
   };
 
   const canEditPost = (): boolean => {
-    // Usuário autenticado pode editar qualquer post
     return isAuthenticated;
   };
 
   const canDeletePost = (): boolean => {
-    // Usuário autenticado pode excluir qualquer post
     return isAuthenticated;
   };
 
@@ -155,7 +149,6 @@ export const HomePage: React.FC = () => {
     setShowDeleteModal(true);
   };
 
-  // Navegação por teclado no modal
   React.useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (showPostViewModal) {
@@ -183,7 +176,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background Image */}
       <div className="fixed inset-0 -z-10 opacity-70">
         <img 
           src="/wallpaper-education.png" 
@@ -199,7 +191,6 @@ export const HomePage: React.FC = () => {
       />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">📚 Posts dos Professores</h1>
           
@@ -241,7 +232,6 @@ export const HomePage: React.FC = () => {
           )}
         </div>
 
-        {/* Posts Section */}
         {isLoading ? (
           <LoadingSkeleton />
         ) : posts.length === 0 ? (
@@ -345,15 +335,9 @@ export const HomePage: React.FC = () => {
         )}
       </main>
 
-      {/* Modals */}
       <LoginModal 
         isOpen={showLoginModal} 
         onClose={() => setShowLoginModal(false)}
-      />
-      
-      <RegisterModal 
-        isOpen={showRegisterModal} 
-        onClose={() => setShowRegisterModal(false)} 
       />
       
       <PostFormModal 
@@ -380,7 +364,6 @@ export const HomePage: React.FC = () => {
         hasPrevPost={currentPostIndex > 0}
       />
 
-      {/* Toast Container */}
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
     </div>
   );

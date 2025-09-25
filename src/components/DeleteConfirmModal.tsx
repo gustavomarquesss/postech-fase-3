@@ -59,8 +59,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
           <div className="flex items-center gap-2 text-red-800">
-            <span>⚠️</span>
-            <strong>Atenção!</strong>
+            <strong>Atenção</strong>
           </div>
           <p className="text-sm text-red-700 mt-1">
             Esta ação não pode ser desfeita. O post será permanentemente removido.
@@ -89,7 +88,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               </>
             ) : (
               <>
-                🗑️ Excluir Post
+                Excluir Post
               </>
             )}
           </button>
