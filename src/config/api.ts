@@ -1,7 +1,19 @@
+// Configuração da API baseada no ambiente
+const isDevelopment = import.meta.env.DEV;
+
 export const apiConfig = {
-  baseURL: 'https://fiap-fsdt-techchallenge-ii-posts.onrender.com',
+  baseURL: isDevelopment 
+    ? '/api'  // Em desenvolvimento usa proxy
+    : 'https://fiap-fsdt-techchallenge-ii-posts.onrender.com', // Em produção usa URL direta
   timeout: 15000,
 };
+
+// Log para debug
+console.log('🔧 API Config:', {
+  environment: isDevelopment ? 'development' : 'production',
+  baseURL: apiConfig.baseURL,
+  usingProxy: isDevelopment
+});
 
 export const API_BASE_URL = apiConfig.baseURL;
 export const API_TIMEOUT = apiConfig.timeout;
