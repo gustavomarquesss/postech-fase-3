@@ -37,7 +37,7 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen relative">
       <div className="fixed inset-0 -z-10 opacity-70">
         <img 
-          src="/wallpaper-education.png" 
+          src="/book-5q6xbfxwtbme5kaj.jpg" 
           alt="Educational background" 
           className="w-full h-full object-cover"
           style={{ minHeight: '100vh' }}
