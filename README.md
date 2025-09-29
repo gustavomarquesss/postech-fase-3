@@ -1,350 +1,231 @@
 # 🎨 Blog para Professores - Frontend
 
-Frontend React + TypeScript para o sistema de blog dos professores da rede pública. Interface moderna, responsiva e acessível para compartilhamento de conteúdo educacional.
+Frontend React + TypeScript para o sistema de blog dos professores da rede pública. Interface moderna e responsiva para compartilhamento de conteúdo educacional.
 
 ## 🚀 Funcionalidades
 
-### 📱 Telas Principais
-- **Página Principal** - Lista de posts com busca e funcionalidades de CRUD
-- **Modals**:
-  - Modal de Login para autenticação de professores
-  - Modal para criar/editar posts
-  - Modal de confirmação para exclusão de posts
+### 📱 Páginas da Aplicação
+- **Página Principal** (`/`) - Lista de posts com busca
+- **Página de Login** (`/login`) - Autenticação de professores
+- **Criar Post** (`/create-post`) - Criação de novos posts
+- **Editar Post** (`/edit-post/:id`) - Edição de posts existentes
 
 ### ✨ Recursos Técnicos
-- ✅ React 19 + TypeScript + Vite
-- ✅ Tailwind CSS v3 para estilização responsiva
-- ✅ Context API para gerenciamento de estado
-- ✅ React Hook Form + Zod para validação
-- ✅ React Query para cache e sincronização
-- ✅ Axios com interceptors automáticos
-- ✅ Sistema de notificações (Toast)
-- ✅ Loading states com skeletons
-- ✅ Design responsivo (Web e Mobile)
+- ✅ React 18 + TypeScript + Vite
+- ✅ React Router DOM para navegação
+- ✅ Tailwind CSS para estilização
+- ✅ React Query para cache e estado
+- ✅ Axios para requisições HTTP
+- ✅ Autenticação JWT
 - ✅ Docker e Docker Compose
-- ✅ Autenticação JWT integrada com backend
 
-## 🏗️ Arquitetura do Projeto
+## 🏗️ Arquitetura da Aplicação
 
+### Estrutura de Pastas
 ```
 src/
 ├── components/          # Componentes reutilizáveis
-│   ├── Header.tsx       # Cabeçalho da aplicação
-│   ├── Modal.tsx        # Modal base
-│   ├── LoginModal.tsx   # Modal de login/registro
+│   ├── Header.tsx       # Cabeçalho com navegação
+│   ├── LoginModal.tsx   # Modal de autenticação
 │   ├── PostFormModal.tsx # Modal criar/editar post
-│   ├── DeleteConfirmModal.tsx # Modal confirmação exclusão
 │   ├── PostViewModal.tsx # Modal visualização de post
-│   ├── RegisterModal.tsx # Modal de registro
-│   ├── Router.tsx       # Sistema de roteamento
+│   ├── DeleteConfirmModal.tsx # Modal confirmação exclusão
+│   ├── Router.tsx       # Configuração React Router
 │   ├── Toast.tsx        # Sistema de notificações
 │   └── Loading.tsx      # Componentes de loading
-├── pages/               # Páginas principais
-│   └── HomePage.tsx     # Página principal
+├── pages/               # Páginas da aplicação
+│   ├── HomePage.tsx     # Página principal (lista posts)
+│   ├── LoginPage.tsx    # Página de login
+│   ├── CreatePostPage.tsx # Página criar post
+│   └── EditPostPage.tsx # Página editar post
 ├── hooks/               # Hooks customizados
-│   ├── useAuth.ts       # Hook de autenticação
-│   ├── usePosts.ts      # Hooks para posts (CRUD)
-│   └── useToast.ts      # Hook para notificações
-├── services/            # Serviços de API
-│   └── api.ts           # Configuração Axios e serviços
-├── types/               # Tipos TypeScript
-│   └── index.ts         # Tipos principais
-└── assets/              # Assets do projeto
+│   ├── useAuth.ts       # Gerenciamento de autenticação
+│   ├── usePosts.ts      # Operações CRUD de posts
+│   └── useToast.ts      # Sistema de notificações
+├── config/              # Configurações
+│   └── api.ts           # Configuração da API
+├── services/            # Serviços
+│   └── api.ts           # Cliente HTTP (Axios)
+└── types/               # Tipos TypeScript
+    └── index.ts         # Definições de tipos
 ```
+
+### Roteamento
+A aplicação utiliza React Router DOM com as seguintes rotas:
+- `/` - Página principal (lista de posts)
+- `/login` - Página de autenticação
+- `/create-post` - Criação de posts (requer autenticação)
+- `/edit-post/:id` - Edição de posts (requer autenticação)
 
 ## ⚙️ Setup e Instalação
 
 ### Pré-requisitos
 - Docker e Docker Compose
-- Node.js 20+ (apenas para desenvolvimento)
+- Node.js 18+ (para desenvolvimento local)
 
 ### 🐳 Execução com Docker (Recomendado)
 
-#### 1. Executar apenas o Frontend
 ```bash
-# Clone o repositório
+# 1. Clone o repositório
 git clone <url-do-repositorio>
 cd frontend
 
-# Execute com Docker Compose
-docker-compose -f docker-compose.frontend.yml up --build
-```
-
-#### 2. Executar Frontend + Backend + MongoDB
-```bash
-# Execute o stack completo
+# 2. Execute com Docker Compose
 docker-compose up --build
+
+# 3. Acesse a aplicação
+# Frontend: http://localhost:5000
 ```
 
 ### 🔧 Desenvolvimento Local
 
-#### 1. Instalar Dependências
 ```bash
+# 1. Instalar dependências
 npm install
-```
 
-#### 2. Configurar Variáveis de Ambiente
-```bash
-# Copie o arquivo de exemplo
-cp env.example .env.local
-
-# Edite as variáveis conforme necessário
-VITE_API_BASE_URL=http://localhost:3000
-VITE_NODE_ENV=development
-```
-
-#### 3. Rodar em Desenvolvimento
-```bash
+# 2. Executar em desenvolvimento
 npm run dev
+
+# 3. Acessar: http://localhost:5175
 ```
 
-#### 4. Build para Produção
+### 🏗️ Build para Produção
+
 ```bash
+# Build local
 npm run build
 npm run preview
+
+# Docker build
+docker-compose up --build
 ```
-
-## 🌐 Acesso à Aplicação
-
-- **Frontend**: http://localhost:3001 (Docker) ou http://localhost:5173 (dev)
-- **Backend API**: http://localhost:3000
-- **MongoDB**: localhost:27017
 
 ## 🔐 Autenticação
 
-### Sistema Integrado com Backend
-- **Login**: Username + senha
-- **JWT**: Tokens com expiração de 1 hora
-- **Interceptors**: Automáticos para requests/responses
+O sistema utiliza JWT (JSON Web Tokens) para autenticação:
+
+- **Tokens**: Armazenados no localStorage
+- **Interceptors**: Adicionam automaticamente o token nas requisições
+- **Redirects**: Usuários não autenticados são redirecionados para `/login`
 - **Logout**: Automático quando token expira
 
-### Exemplo de Usuário de Teste
-```
-Username: professor1
-Senha: 123456
-```
+### Fluxo de Autenticação
+1. Usuário acessa `/login`
+2. Insere username e senha
+3. Backend retorna JWT token
+4. Token é armazenado no localStorage
+5. Requisições subsequentes incluem o token no header Authorization
 
 ## 🔌 Integração com Backend
 
-### Endpoints Utilizados
-```typescript
-// Autenticação
-POST /auth/login    - Login com username/password
-POST /auth/register - Registro de novo usuário
-
-// Posts
-GET    /posts       - Lista todos os posts (público)
-GET    /posts/:id   - Busca post por ID (público)
-GET    /posts/search?q=termo - Busca por termo (público)
-POST   /posts      - Cria novo post (requer auth)
-PUT    /posts/:id  - Atualiza post (requer auth)
-DELETE /posts/:id  - Deleta post (requer auth)
-```
-
-### JWT Token Structure
-```typescript
-interface JWTPayload {
-  id: string;
-  username: string;
-  exp: number;
-}
-```
-
-## 🎨 Design System
-
-### Wallpaper Educacional
-- Imagem de fundo temática com 30% de opacidade
-- Localizada em `public/wallpaper-education.png`
-- Responsiva e otimizada para todos os dispositivos
-
-### Glassmorphism Design
-- Fundos semi-transparentes (`bg-white/95`)
-- Efeitos de backdrop-blur nos cards e header
-- Bordas sutis e sombras suaves
-- Hierarquia visual clara com z-index
-
-### Sistema de Cores
-```css
-Primary: #2563eb (Blue 600)
-Success: #10b981 (Emerald 500)
-Warning: #f59e0b (Amber 500)
-Error: #ef4444 (Red 500)
-
-/* Fundos */
-Card Background: rgba(255, 255, 255, 0.95)
-Header Background: rgba(255, 255, 255, 0.95)
-```
-
-### Componentes Customizados
-```css
-.btn-primary    - Botão principal azul
-.btn-secondary  - Botão secundário cinza
-.btn-danger     - Botão de perigo vermelho
-.input-field    - Campo de entrada estilizado
-.card          - Card com glassmorphism
-.modal-overlay  - Overlay de modais
-```
-
-## 📱 Responsividade
-
-A aplicação foi desenvolvida com **mobile-first** e é totalmente responsiva:
-
-- **Mobile** (< 640px): Layout otimizado para telas pequenas
-- **Tablet** (640px - 1024px): Adaptação para telas médias
-- **Desktop** (> 1024px): Layout completo para telas grandes
-
-### Breakpoints (Tailwind CSS)
-- **sm**: 640px+
-- **md**: 768px+
-- **lg**: 1024px+
-- **xl**: 1280px+
-
-## 🚀 Deploy
-
-### Docker Production
+### API Endpoints
 ```bash
-# Build da imagem
-docker build -t blog-frontend .
+# Autenticação
+POST /auth/login     # Login de usuário
 
-# Executar container
-docker run -p 3001:80 blog-frontend
+# Posts (CRUD)
+GET    /posts        # Listar posts
+POST   /posts        # Criar post (requer auth)
+PUT    /posts/:id    # Atualizar post (requer auth)
+DELETE /posts/:id    # Deletar post (requer auth)
+GET    /posts/search # Buscar posts
 ```
 
-### Nginx Configuration
-A aplicação usa Nginx para servir os arquivos estáticos com:
-- Compressão Gzip
-- Cache de assets estáticos (1 ano para imagens)
-- Headers de segurança
-- Suporte a SPA (Single Page Application)
+### Configuração da API
+A aplicação se conecta automaticamente com o backend:
+- **Desenvolvimento**: Usa proxy Vite (`/api`)
+- **Docker**: Usa proxy Vite Preview (`/api`)
+- **Produção**: URL direta para a API
 
-### Variáveis de Ambiente
-```bash
-# Frontend (.env.local)
-VITE_API_BASE_URL=http://localhost:3000
-VITE_NODE_ENV=development
-```
+## 🎨 Interface e Design
+
+### Design System
+- **Framework**: Tailwind CSS
+- **Tema**: Educacional com wallpaper temático
+- **Estilo**: Glassmorphism com transparências
+- **Ícones**: React Icons (substituindo emojis)
+- **Responsividade**: Mobile-first design
+
+### Componentes Principais
+- **Header**: Navegação e autenticação
+- **Cards**: Listagem de posts com glassmorphism
+- **Modais**: Visualização e confirmações
+- **Forms**: Criação e edição de posts
+- **Toast**: Notificações do sistema
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Frontend**: React 19, TypeScript, Vite
-- **Estilização**: Tailwind CSS v3, Inter Font
-- **Estado**: React Query, Context API
-- **Formulários**: React Hook Form + Zod
-- **HTTP**: Axios com interceptors
+- **Frontend**: React 18, TypeScript, Vite
+- **Roteamento**: React Router DOM
+- **Estilização**: Tailwind CSS
+- **Estado**: React Query, useState/useContext
+- **HTTP**: Axios
+- **Ícones**: React Icons
+- **Container**: Docker + Vite Preview
 - **Build**: Vite
-- **Container**: Docker + Nginx
-- **Linting**: ESLint
 
-## 🔒 Segurança Implementada
+## 🧪 Guia de Uso
 
-- ✅ JWT tokens com expiração (1 hora)
-- ✅ Senhas hasheadas no backend (bcrypt)
-- ✅ Validação de entrada client-side (Zod)
-- ✅ Headers de segurança no Nginx
-- ✅ Interceptors para tratamento de token expirado
-- ✅ HTTPS pronto (configuração)
-
-## 🧪 Como Testar
-
-### 1. Teste de Funcionalidades
+### 1. Fluxo de Navegação
 ```bash
-# Iniciar aplicação
-npm run dev
-
-# Testar fluxo completo:
-1. Acessar http://localhost:5173
-3. Fazer login
-4. Criar post
-5. Editar post
-6. Excluir post
-7. Fazer logout
-8. Verificar permissões
+1. Acesse http://localhost:5000
+2. Visualize a lista de posts (público)
+3. Clique em "Login" para autenticar
+4. Após login, use "Novo Post" para criar
+5. Use ações de editar/deletar nos seus posts
+6. Use a busca para encontrar posts específicos
 ```
 
-### 2. Teste de Build
-```bash
-# Build para produção
-npm run build
+### 2. Teste das Funcionalidades
+- **Lista de Posts**: Visualização pública
+- **Busca**: Campo de pesquisa por título/conteúdo
+- **Autenticação**: Login/logout
+- **CRUD**: Criar, editar, deletar posts (requer auth)
+- **Navegação**: Entre páginas usando React Router
 
-# Preview do build
-npm run preview
+## 🚧 Desafios e Soluções
 
-# Teste Docker
-docker-compose up --build
-```
+### 1. CORS em Docker
+**Problema**: Requests diretos para API externa bloqueados por CORS
+**Solução**: Implementação de proxy no Vite Preview para ambiente Docker
 
-### 3. Teste de Responsividade
-- Abrir DevTools (F12)
-- Testar breakpoints: Mobile, Tablet, Desktop
-- Verificar wallpaper e glassmorphism
+### 2. Transição Modal → Páginas  
+**Problema**: Cliente solicitou mudança de modais para páginas separadas
+**Solução**: Refatoração usando React Router DOM mantendo funcionalidades
 
-## 🚀 Roteamento
+### 3. Gerenciamento de Estado
+**Problema**: Estados complexos de autenticação e posts
+**Solução**: Uso de React Query para cache + hooks customizados
 
-### Sistema Customizado
-- ✅ **Redirecionamento automático**: `/` → `/home`
-- ✅ **History API**: Suporte a botões voltar/avançar
-- ✅ **URL atualizada**: Reflete a rota atual na barra de endereços
-- ✅ **Navegação programática**: Função `navigateTo()` disponível
-- ✅ **Fallback**: Rotas não encontradas redirecionam para `/home`
+### 4. Responsividade
+**Problema**: Interface funcional em diferentes dispositivos
+**Solução**: Design mobile-first com Tailwind CSS
 
-## 🔧 Troubleshooting
+## 📋 Experiências da Equipe
 
-### Erro de Tailwind CSS
-```bash
-# Se classes não funcionarem
-npm uninstall tailwindcss
-npm install tailwindcss@^3.4.0
-npm run dev
-```
+### Pontos Positivos
+- **React Query**: Facilitou muito o gerenciamento de estado server
+- **Tailwind CSS**: Agilizou o desenvolvimento da interface
+- **TypeScript**: Preveniu muitos bugs durante o desenvolvimento
+- **Docker**: Simplificou o deployment e ambiente consistente
 
-### Erro de Dependências
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### Erro de Docker
-```bash
-docker-compose down
-docker system prune -f
-docker-compose up --build
-```
-
-### Wallpaper não Aparece
-- Verificar se arquivo existe: `public/wallpaper-education.png`
-- Verificar nome sem espaços
-- Cache: Ctrl+F5 para reload completo
-
-## 📋 Checklist de Verificação
-
-- [x] Aplicação roda em desenvolvimento (`npm run dev`)
-- [x] Build funciona (`npm run build`)
-- [x] Docker build funciona (`docker-compose up`)
-- [x] Layout responsivo funciona
-- [x] Modais abrem e fecham corretamente
-- [x] Sistema de autenticação funciona
-- [x] CRUD de posts funciona
-- [x] Busca funciona
-- [x] Notificações (toasts) funcionam
-- [x] Wallpaper educacional carrega
-- [x] Glassmorphism aplicado
-- [x] Roteamento automático funciona
+### Aprendizados
+- **Proxy Configuration**: Configuração de proxy para resolver CORS
+- **React Router**: Migração de modals para pages com roteamento
+- **State Management**: Uso eficiente de hooks para estado local
+- **Container Strategy**: Docker sem nginx usando Vite Preview
 
 ## 👥 Equipe de Desenvolvimento
 
-**Desenvolvido por:**
+**Desenvolvido como Tech Challenge FIAP - Pós-Tech Fase 3:**
 - Thomaz Moreira
 - Mateus Jesus  
 - João Casemiro
 - Gustavo Marques
 - Guilherme Belmonte
 
-## 📄 Licença
+---
 
-Este projeto foi desenvolvido como parte do **Tech Challenge da FIAP - Pós-Tech Fase 3**.
+## 🎯 Conclusão
 
-**🎯 Objetivo**: Criar uma plataforma moderna e intuitiva para que professores da rede pública possam compartilhar conhecimento e recursos educacionais de forma eficiente e colaborativa.
-
-**✨ Sistema completo e funcional!**
-
-Este frontend oferece uma experiência moderna e intuitiva para o compartilhamento de conhecimento entre professores, com foco em usabilidade, performance e acessibilidade.
+Este frontend oferece uma solução moderna e funcional para o compartilhamento de conhecimento entre professores, implementando todas as funcionalidades solicitadas com foco em usabilidade, performance e manutenibilidade.
