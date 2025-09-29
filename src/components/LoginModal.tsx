@@ -15,7 +15,7 @@ const loginSchema = z.object({
     .max(50, 'Nome de usuário deve ter no máximo 50 caracteres'),
   password: z
     .string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres')
+    .min(5, 'Senha deve ter pelo menos 6 caracteres')
     .max(100, 'Senha deve ter no máximo 100 caracteres'),
 });
 
@@ -24,9 +24,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess?: () => void;
 }
 
-export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const { success, error } = useToast();
@@ -45,10 +46,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     try {
       await login(data);
       success('Login realizado com sucesso!');
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
 
     } catch (err) {
       console.error('Erro no login:', err);

@@ -9,16 +9,15 @@ import type {
   RegisterRequest,
   RegisterResponse,
 } from "../types";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+import { apiConfig, ENDPOINTS } from "../config/api";
 
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: apiConfig.baseURL,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  timeout: 10000,
+  timeout: apiConfig.timeout,
   withCredentials: false,
 });
 
@@ -53,32 +52,46 @@ api.interceptors.response.use(
 
 export const postsService = {
   async listPosts(): Promise<Post[]> {
-    const response = await api.get<Post[]>("/posts");
-    return response.data;
+    try {
+      console.log('Fetching posts from:', `${apiConfig.baseURL}${ENDPOINTS.posts}`);
+      const response = await api.get<Post[]>(ENDPOINTS.posts);
+      console.log('Posts response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      throw error;
+    }
   },
 
   async getPost(id: string): Promise<Post> {
-    const response = await api.get<Post>(`/posts/${id}`);
+    const response = await api.get<Post>(`${ENDPOINTS.posts}/${id}`);
     return response.data;
   },
 
   async createPost(data: CreatePostRequest): Promise<Post> {
-    const response = await api.post<Post>("/posts", data);
+    const response = await api.post<Post>(ENDPOINTS.posts, data);
     return response.data;
   },
 
   async updatePost(id: string, data: UpdatePostRequest): Promise<Post> {
-    const response = await api.put<Post>(`/posts/${id}`, data);
+    const response = await api.put<Post>(`${ENDPOINTS.posts}/${id}`, data);
     return response.data;
   },
 
   async deletePost(id: string): Promise<void> {
-    await api.delete(`/posts/${id}`);
+    await api.delete(`${ENDPOINTS.posts}/${id}`);
   },
 
   async searchPosts(params: PostSearchParams): Promise<Post[]> {
-    const response = await api.get<Post[]>("/posts/search", { params });
-    return response.data;
+    try {
+      console.log('Searching posts with params:', params);
+      const response = await api.get<Post[]>(ENDPOINTS.search, { params });
+      console.log('Search response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching posts:', error);
+      throw error;
+    }
   },
 };
 
@@ -86,7 +99,7 @@ export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await api.post<LoginResponse>(
-        "/auth/login",
+        ENDPOINTS.auth.login,
         credentials
       );
       return response.data;
@@ -102,7 +115,7 @@ export const authService = {
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
     try {
       const response = await api.post<RegisterResponse>(
-        "/auth/register",
+        ENDPOINTS.auth.register,
         userData
       );
       return response.data;

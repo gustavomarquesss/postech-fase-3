@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaUser, FaCalendarAlt, FaEdit, FaTrashAlt, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Modal } from './Modal';
 import { useAuth } from '../hooks/useAuth';
 import type { Post } from '../types';
@@ -72,10 +73,12 @@ export const PostViewModal: React.FC<PostViewModalProps> = ({
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-2">
-                👤 <strong>{post.autor}</strong>
+                <FaUser className="text-gray-500" />
+                <strong>{post.autor}</strong>
               </span>
               <span className="flex items-center gap-2">
-                📅 {formatDate(post.createdAt)}
+                <FaCalendarAlt className="text-gray-500" />
+                {formatDate(post.createdAt)}
               </span>
             </div>
           </div>
@@ -87,14 +90,14 @@ export const PostViewModal: React.FC<PostViewModalProps> = ({
                 className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-full transition-colors"
                 title="Editar post"
               >
-                ✏️
+                <FaEdit />
               </button>
               <button
                 onClick={handleDeleteClick}
                 className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-full transition-colors"
                 title="Excluir post"
               >
-                🗑️
+                <FaTrashAlt />
               </button>
             </div>
           )}
@@ -116,7 +119,8 @@ export const PostViewModal: React.FC<PostViewModalProps> = ({
                 : 'text-gray-400 cursor-not-allowed'
                 }`}
             >
-              ← Post Anterior
+              <FaArrowLeft />
+              Post Anterior
             </button>
 
             <div className="text-sm text-gray-500">
@@ -131,7 +135,8 @@ export const PostViewModal: React.FC<PostViewModalProps> = ({
                 : 'text-gray-400 cursor-not-allowed'
                 }`}
             >
-              Próximo Post →
+              Próximo Post
+              <FaArrowRight />
             </button>
           </div>
         )}

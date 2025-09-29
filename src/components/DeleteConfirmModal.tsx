@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaTrashAlt, FaTimes } from 'react-icons/fa';
 import { Modal } from './Modal';
 import { Loading } from './Loading';
 import { useDeletePostMutation } from '../hooks/usePosts';
@@ -50,7 +51,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     >
       <div className="space-y-4">
         <div className="text-center">
-          <div className="text-4xl mb-4">🗑️</div>
+          <FaTrashAlt className="text-4xl text-red-500 mb-4 mx-auto" />
           <p className="text-gray-700">
             Tem certeza de que deseja excluir o post{' '}
             <strong className="text-gray-900">"{post?.titulo}"</strong>?
@@ -71,8 +72,9 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             type="button"
             onClick={handleClose}
             disabled={isLoading}
-            className="btn-secondary flex-1"
+            className="btn-secondary flex-1 flex items-center justify-center gap-2"
           >
+            <FaTimes />
             Cancelar
           </button>
           <button
@@ -88,6 +90,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               </>
             ) : (
               <>
+                <FaTrashAlt />
                 Excluir Post
               </>
             )}

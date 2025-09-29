@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaBook, FaSearch, FaTimes, FaUser, FaCalendarAlt, FaEdit, FaTrashAlt, FaFileAlt, FaPlus } from 'react-icons/fa';
 import { Header } from '../components/Header';
-import { LoginModal } from '../components/LoginModal';
-import { PostFormModal } from '../components/PostFormModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
 import { PostViewModal } from '../components/PostViewModal';
 import { Loading, LoadingSkeleton } from '../components/Loading';
@@ -12,18 +12,18 @@ import { usePostsQuery, useSearchPostsQuery } from '../hooks/usePosts';
 import type { Post } from '../types';
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showPostFormModal, setShowPostFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostViewModal, setShowPostViewModal] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deletingPost, setDeletingPost] = useState<Post | null>(null);
   const [viewingPost, setViewingPost] = useState<Post | null>(null);
   const [currentPostIndex, setCurrentPostIndex] = useState<number>(0);
   const { isAuthenticated } = useAuth();
   const toast = useToast();
+  const postsErrorShown = useRef(false);
+  const searchErrorShown = useRef(false);
 
   const { data: allPosts, isLoading: isLoadingPosts, error: postsError } = usePostsQuery();
   const { 
@@ -42,14 +42,24 @@ export const HomePage: React.FC = () => {
   const isLoading = isLoadingPosts || (isSearching && isLoadingSearch);
 
   React.useEffect(() => {
-    if (postsError) {
+    if (postsError && !postsErrorShown.current) {
+      console.error('Posts error:', postsError);
       toast.error('Erro ao carregar posts. Tente novamente.');
+      postsErrorShown.current = true;
+    }
+    if (!postsError) {
+      postsErrorShown.current = false;
     }
   }, [postsError, toast]);
 
   React.useEffect(() => {
-    if (searchError) {
+    if (searchError && !searchErrorShown.current) {
+      console.error('Search error:', searchError);
       toast.error('Erro ao buscar posts. Tente novamente.');
+      searchErrorShown.current = true;
+    }
+    if (!searchError) {
+      searchErrorShown.current = false;
     }
   }, [searchError, toast]);
 
@@ -92,8 +102,7 @@ export const HomePage: React.FC = () => {
 
 
   const handleEditPost = (post: Post) => {
-    setEditingPost(post);
-    setShowPostFormModal(true);
+    navigate(`/edit-post/${post._id}`);
   };
 
   const handleDeletePost = (post: Post) => {
@@ -101,10 +110,6 @@ export const HomePage: React.FC = () => {
     setShowDeleteModal(true);
   };
 
-  const handleClosePostForm = () => {
-    setShowPostFormModal(false);
-    setEditingPost(null);
-  };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
@@ -140,8 +145,8 @@ export const HomePage: React.FC = () => {
   }, [currentPostIndex, posts]);
 
   const handleEditFromModal = (post: Post) => {
-    setEditingPost(post);
-    setShowPostFormModal(true);
+    setShowPostViewModal(false);
+    navigate(`/edit-post/${post._id}`);
   };
 
   const handleDeleteFromModal = (post: Post) => {
@@ -185,14 +190,14 @@ export const HomePage: React.FC = () => {
         />
       </div>
       
-      <Header 
-        onLoginClick={() => setShowLoginModal(true)}
-        onCreatePostClick={() => setShowPostFormModal(true)}
-      />
+      <Header />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">📚 Posts dos Professores</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <FaBook className="text-blue-600" />
+            Posts dos Professores
+          </h1>
           
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
@@ -211,14 +216,15 @@ export const HomePage: React.FC = () => {
                 disabled={searchTerm.length < 2 || isSearching}
                 className="btn-primary flex items-center gap-2"
               >
-                {isSearching ? <Loading size="sm" /> : '🔍'}
+                {isSearching ? <Loading size="sm" /> : <FaSearch />}
                 Buscar
               </button>
               {searchTerm && (
                 <button 
                   onClick={clearSearch}
-                  className="btn-secondary"
+                  className="btn-secondary flex items-center gap-2"
                 >
+                  <FaTimes />
                   Limpar
                 </button>
               )}
@@ -236,7 +242,7 @@ export const HomePage: React.FC = () => {
           <LoadingSkeleton />
         ) : posts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">📝</div>
+            <FaFileAlt className="text-6xl text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {searchTerm 
                 ? 'Nenhum post encontrado' 
@@ -251,10 +257,11 @@ export const HomePage: React.FC = () => {
             </p>
             {!searchTerm && isAuthenticated && (
               <button
-                onClick={() => setShowPostFormModal(true)}
-                className="btn-primary"
+                onClick={() => navigate('/create-post')}
+                className="btn-primary flex items-center gap-2"
               >
-                ✏️ Criar Primeiro Post
+                <FaPlus />
+                Criar Primeiro Post
               </button>
             )}
           </div>
@@ -269,10 +276,12 @@ export const HomePage: React.FC = () => {
                     </h2>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
-                        👤 {post.autor}
+                        <FaUser className="text-gray-500" />
+                        {post.autor}
                       </span>
                       <span className="flex items-center gap-1">
-                        📅 {formatDate(post.createdAt)}
+                        <FaCalendarAlt className="text-gray-500" />
+                        {formatDate(post.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -288,7 +297,7 @@ export const HomePage: React.FC = () => {
                           className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded"
                           title="Editar post"
                         >
-                          ✏️
+                          <FaEdit />
                         </button>
                       )}
                       {canDeletePost() && (
@@ -300,7 +309,7 @@ export const HomePage: React.FC = () => {
                           className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded"
                           title="Excluir post"
                         >
-                          🗑️
+                          <FaTrashAlt />
                         </button>
                       )}
                     </div>
@@ -335,16 +344,6 @@ export const HomePage: React.FC = () => {
         )}
       </main>
 
-      <LoginModal 
-        isOpen={showLoginModal} 
-        onClose={() => setShowLoginModal(false)}
-      />
-      
-      <PostFormModal 
-        isOpen={showPostFormModal} 
-        onClose={handleClosePostForm}
-        post={editingPost}
-      />
       
       <DeleteConfirmModal 
         isOpen={showDeleteModal} 

@@ -8,6 +8,11 @@ export const usePostsQuery = () => {
     queryFn: postsService.listPosts,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    retry: (failureCount, error) => {
+      console.log('Posts query retry attempt:', failureCount, error);
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
 
@@ -26,8 +31,13 @@ export const useSearchPostsQuery = (searchTerm: string) => {
     queryKey: ["posts", "search", searchTerm],
     queryFn: () => postsService.searchPosts({ q: searchTerm }),
     enabled: !!searchTerm && searchTerm.length >= 2,
-    staleTime: 2 * 60 * 1000, // 2 minutos para buscas
+    staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
+    retry: (failureCount, error) => {
+      console.log('Search query retry attempt:', failureCount, error);
+      return failureCount < 1;
+    },
+    retryDelay: 1000,
   });
 };
 

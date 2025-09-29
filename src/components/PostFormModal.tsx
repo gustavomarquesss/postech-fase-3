@@ -31,10 +31,11 @@ type PostFormData = z.infer<typeof postSchema>;
 interface PostFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   post?: Post | null;
 }
 
-export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, post }) => {
+export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, onSuccess, post }) => {
   const { success, error } = useToast();
   const createPostMutation = useCreatePostMutation();
   const updatePostMutation = useUpdatePostMutation();
@@ -85,7 +86,12 @@ export const PostFormModal: React.FC<PostFormModalProps> = ({ isOpen, onClose, p
         await createPostMutation.mutateAsync(data);
         success('Post criado com sucesso!');
       }
-      onClose();
+      
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
       reset();
     } catch (err) {
       console.error('Erro ao salvar post:', err);

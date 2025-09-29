@@ -1,0 +1,91 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaPlus } from 'react-icons/fa';
+import { PostFormModal } from '../components/PostFormModal';
+import { useAuth } from '../hooks/useAuth';
+
+export const CreatePostPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  const handleClose = () => {
+    navigate('/');
+  };
+
+  const handleSuccess = () => {
+    navigate('/');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen relative">
+      <div className="fixed inset-0 -z-10 opacity-70">
+        <img 
+          src="/wallpaper-education.png" 
+          alt="Educational background" 
+          className="w-full h-full object-cover"
+          style={{ minHeight: '100vh' }}
+        />
+      </div>
+      
+      <header className="bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <img src="/minilogo.png" alt="Logo" className="h-8 w-8" />
+              <h1 className="text-xl font-bold text-gray-900">Blog Professores</h1>
+            </div>
+            <button
+              onClick={handleClose}
+              className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+            >
+              <FaArrowLeft />
+              Voltar para Home
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-8">
+        <div className="w-full max-w-4xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+              <FaPlus className="text-blue-600" />
+              Criar Novo Post
+            </h2>
+            <p className="text-gray-600">Compartilhe seu conhecimento com a comunidade</p>
+          </div>
+          
+          <div className="relative">
+            <PostFormModal 
+              isOpen={true} 
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+              post={null}
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
