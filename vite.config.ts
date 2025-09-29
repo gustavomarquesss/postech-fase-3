@@ -14,5 +14,17 @@ export default defineConfig({
         secure: true,
       }
     }
+  },
+  preview: {
+    port: 5000,
+    cors: true,
+    proxy: {
+      '/api': {
+        target: 'https://fiap-fsdt-techchallenge-ii-posts.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
+      }
+    }
   }
 })
