@@ -16,7 +16,6 @@ dist-ssr
 build
 
 # Environment files
-.env
 .env.local
 .env.development.local
 .env.test.local
@@ -36,9 +35,6 @@ build
 
 # OS generated files
 Thumbs.db
-
-# Docker
-.dockerignore
 
 # Temporary files
 *.tmp
