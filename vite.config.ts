@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
@@ -7,24 +7,24 @@ export default defineConfig({
     port: 5175,
     cors: true,
     proxy: {
-      '/api': {
-        target: 'https://fiap-fsdt-techchallenge-ii-posts.onrender.com',
+      "/api": {
+        target: "https://fiap-fsdt-techchallenge-ii-posts.onrender.com",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, ""),
         secure: true,
-      }
-    }
+      },
+    },
   },
   preview: {
     port: 5000,
     cors: true,
     proxy: {
-      '/api': {
-        target: 'https://fiap-fsdt-techchallenge-ii-posts.onrender.com',
+      "/api": {
+        target: "https://fiap-fsdt-techchallenge-ii-posts.onrender.com",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, ""),
         secure: true,
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
